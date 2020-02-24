@@ -15,7 +15,7 @@
 !       Author:
 !   Shane Flynn
 !==============================================================================!
-module morse_grid_mod
+module Morse2D_QRG_mod
 implicit none
 !==============================================================================!
 !                            Global Variables
@@ -314,32 +314,4 @@ write(99,*) 'MMC_freq ==> ',MMC_freq
 close(99)
 end subroutine write_out
 !==============================================================================!
-end module morse_grid_mod
-!==============================================================================!
-program main
-use morse_grid_mod
-!==============================================================================!
-implicit none
-integer::N_MMC_box,N_1D,N_MMC_grid,MMC_freq
-double precision::E_cut,c_LJ
-double precision,allocatable,dimension(:,:)::x,U
-!==============================================================================!
-read(*,*) N_MMC_box
-read(*,*) E_cut
-read(*,*) N_1D
-read(*,*) Npoints
-read(*,*) c_LJ
-read(*,*) N_MMC_grid
-read(*,*) MMC_freq
-!==============================================================================!
-!                               Allocations
-!==============================================================================!
-allocate(xmin(d),xmax(d),x(d,Npoints),U(Npoints,Npoints))
-!==============================================================================!
-call box_size_P(N_MMC_box,E_cut)
-call compute_integral_P(N_1D,E_cut)
-call initial_distribution(x,E_cut)
-call initial_pairwise_energy(x,U,E_cut,c_LJ)
-call generate_grid(x,U,E_cut,c_LJ,N_MMC_Grid,MMC_freq)
-call write_out(E_cut,N_1D,c_LJ,N_MMC_grid,MMC_freq)
-end program main
+end module Morse2D_QRG_mod
