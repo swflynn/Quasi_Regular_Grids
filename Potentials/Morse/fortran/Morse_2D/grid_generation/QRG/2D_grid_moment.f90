@@ -8,12 +8,10 @@
 !==============================================================================!
 !Start developing 2D module want to make a module for each code then remove the
 !various seperate directories
-!remove the moment calculations, they are not useful
 !the 2D case can use more efficient basis functions, these are not generalizable
-!to the nD case, see the nD code for this generalization.
 !==============================================================================!
 !       Modified:
-!   21 Feburary 2020
+!   23 Feburary 2020
 !       Author:
 !   Shane Flynn
 !==============================================================================!
@@ -100,9 +98,6 @@ do i=1,N_MMC_box
     enddo
   endif
 enddo
-do i=1,d
-  write(*,*) 'Box Dimensions==>', xmin(i),xmax(i)
-enddo
 end subroutine box_size_P
 !==============================================================================!
 subroutine compute_integral_P(N_1D,E_cut)
@@ -143,15 +138,29 @@ do j=1,d
   dummy=dummy*(xmax(j)-xmin(j))
 enddo
 integral_P=dummy*Moment
-write(*,*) 'integral_P ==> ', integral_P
 end subroutine compute_integral_P
 !==============================================================================!
-subroutine initial_distribution(x,Npoints,E_cut)
+subroutine write_grid(x,id,grid_name)
+!==============================================================================!
+!write grid to a file
+!==============================================================================!
+implicit none
+integer::id,j
+double precision::x(d,Npoints)
+character(len=12)::grid_name
+open(unit=id,file=grid_name)
+do j=1,Npoints
+  write(id,*) x(:,j)
+enddo
+close(id)
+end subroutine write_grid
+!==============================================================================!
+subroutine initial_distribution(x,E_cut)
 !==============================================================================!
 !Generate initial distribution of points, accept anything within E_cut contour
 !==============================================================================!
 implicit none
-integer::Npoints,i,j
+integer::i
 double precision::E_Cut,x(d,Npoints),s(d)
 i=1
 do while(i.le.Npoints)
@@ -162,14 +171,10 @@ do while(i.le.Npoints)
     i=i+1
   endif
 enddo
-open(unit=17,file='coor_ini.dat')
-do i=1,Npoints
-  write(17,*) x(:,i)
-enddo
-close(17)
+call write_grid(x,17,'coor_ini.dat')
 end subroutine initial_distribution
 !==============================================================================!
-function Pair_LJ_NRG(x1,x2,Npoints,E_cut,c_LJ)
+function Pair_LJ_NRG(x1,x2,E_cut,c_LJ)
 !==============================================================================!
 !quasi-Lennard Jones pairwise energy between grid points
 !==============================================================================!
@@ -181,7 +186,6 @@ function Pair_LJ_NRG(x1,x2,Npoints,E_cut,c_LJ)
 !c_LJ           ==>parameter for LJ
 !==============================================================================!
 implicit none
-integer::Npoints
 double precision::x1(d),x2(d),a,b,Pair_LJ_NRG,sigma1,sigma2,E_cut,c_LJ
 a=sum((x1(:)-x2(:))**2)
 sigma1=c_LJ*(P(x1,E_cut)*Npoints)**(-1./d)
@@ -191,154 +195,151 @@ a=(sigma1**2/a)
 Pair_LJ_NRG=a**(d+9)-a**(d+3)+b**(d+9)-b**(d+3)
 end function Pair_LJ_NRG
 !==============================================================================!
-subroutine initial_pairwise_energy(U,x,Npoints,E_cut,c_LJ)
+subroutine initial_pairwise_energy(x,U,E_cut,c_LJ)
 !==============================================================================!
 !Compute the pairwise energies for all the initial Grid Points U[x_ij]
 !==============================================================================!
 implicit none
-integer::Npoints,i,j
-double precision::E_cut,c_LJ,U(Npoints,Npoints),x(d,Npoints),s(d)
+integer::i,j
+double precision::E_cut,c_LJ,U(Npoints,Npoints),x(d,Npoints)
 do i=2,Npoints
   do j=1,i-1
-    U(i,j)=Pair_LJ_NRG(x(:,i),x(:,j),Npoints,E_cut,c_LJ)
+    U(i,j)=Pair_LJ_NRG(x(:,i),x(:,j),E_cut,c_LJ)
     U(j,i)=U(i,j)
   enddo
 enddo
 end subroutine initial_pairwise_energy
-!!==============================================================================!
-
-
-
-
-
-!!!!!!!!==============================================================================!
-!!!!!!!function random_integer(Nmin,Nmax)
-!!!!!!!!==============================================================================!
-!!!!!!!!Randomly generate an integer in the range 1-Nparticles
-!!!!!!!!==============================================================================!
-!!!!!!!!Nmin           ==>minimum index value (1)
-!!!!!!!!Nmax           ==>maximum index value (Nparticles)
-!!!!!!!!random_integer ==>integer returned
-!!!!!!!!a              ==>random number (0,1)
-!!!!!!!!==============================================================================!
-!!!!!!!implicit none
-!!!!!!!integer::Nmin,Nmax,random_integer
-!!!!!!!double precision::a
-!!!!!!!call random_number(a)
-!!!!!!!random_integer=floor(a*(Nmax-Nmin+1))+Nmin
-!!!!!!!end function random_integer
-!!!!!!!!==============================================================================!
-
-
-!!==============================================================================!
-!!                       Begin MMC to Optimize GridPoints
-!!==============================================================================!
-!accept=0
-!counter=0
-!mv_cutoff=0.01
-!deltae1=0
-!plt_count=0
-!open(unit=18,file='mv_cut.dat')
-!open(unit=19,file='delE.dat')
-!do i=1,N_MC
-!!==============================================================================!
-!!                           Select Atom to Move
-!!==============================================================================!
-!    k=random_integer(1,Npoints)
-!!==============================================================================!
-!!                           Generate trial move
-!!        random numbers generated (0,1), make it (-1,1) ==> s=2*s-1
-!!==============================================================================!
-!    call random_number(s)
-!    x0=x(:,k)+mv_cutoff*(2*s-1)
-!!==============================================================================!
-!!                   Only consider point if V(trial)<Ecut
-!!                 Compute Energy Change due to Trial Move
-!!==============================================================================!
-!    if(V(x0).lt.E_cut) then
-!        counter=counter+1
-!        U_move(k)=P(x0)
-!        Delta_E=0d0
-!        do j=1,Npoints
-!            if(j.ne.k) then
-!                U_move(j)=Pair_LJ_NRG(x(:,j),x0)
-!                Delta_E=Delta_E+U(j,k)-U_move(j)
-!            endif
-!        enddo
-!!==============================================================================!
-!!               Accept any trial that decreases the energy
-!!==============================================================================!
-!        if(Delta_E.ge.0d0)then
-!            U(:,k)=U_move(:)
-!            U(k,:)=U_move(:)
-!            accept=accept+1
-!            x(:,k)=x0(:)
-!            deltae1=deltae1+Delta_E
-!        endif
-!     endif
-!!==============================================================================!
-!!                          Update Cutoff Paramater
-!!       acceptance ~50%, adjust trial movement displacement accordingly
-!!==============================================================================!
-!        if(mod(i,MMC_freq)==0)then
-!            write(*,*) 'MMC Iteration', i
-!            if(dble(accept)/counter<0.3)then
-!                mv_cutoff=mv_cutoff*0.9
-!            else
-!                mv_cutoff=mv_cutoff*1.1
-!            endif
-!        accept=0
-!        counter=0
-!        call Moments(Moment,x)
-!        write(*,*) 'MMC Moments:'
-!        write(*,*) Moment(1:5)
-!        write(*,*) 'mv cutoff', mv_cutoff
-!        write(*,*) 'Deltae1==>', Deltae1
-!        plt_count=plt_count+1
-!        write(18,*) plt_count, mv_cutoff
-!        write(19,*) plt_count, Deltae1
-!        deltae1=0
-!        endif
-!enddo
-!close(18)
-!close(19)
+!==============================================================================!
+function random_integer(Nmin,Nmax)
+!==============================================================================!
+!Randomly generate an integer in the range Nmin-Nmax
+!==============================================================================!
+!Nmin           ==>minimum index value
+!Nmax           ==>maximum index value
+!random_integer ==>integer returned
+!a              ==>pseudo-random number (0,1)
+!==============================================================================!
+implicit none
+integer::Nmin,Nmax,random_integer
+double precision::a
+call random_number(a)
+random_integer=floor(a*(Nmax-Nmin+1))+Nmin
+end function random_integer
+!==============================================================================!
+subroutine generate_grid(x,U,E_cut,c_LJ,N_MMC_grid,MMC_freq)
+!==============================================================================!
+!                           Generate QRG using MMC
+!==============================================================================!
+implicit none
+integer::N_MMC_grid,MMC_freq,accept,counter,i,j,k
+double precision::x(d,Npoints),U(Npoints,Npoints),E_cut,c_LJ,mv_cutoff,deltae1
+double precision::Delta_E,U_move(Npoints),s(d),x0(d)
+!==============================================================================!
+accept=0
+counter=0
+mv_cutoff=0.01
+deltae1=0
+do i=1,N_MMC_grid
+  k=random_integer(1,Npoints)                               !Select Atom to Move
+!==============================================================================!
+!                           Generate trial move
+!        random numbers generated (0,1), make it (-1,1) ==> s=2*s-1
+!==============================================================================!
+  call random_number(s)
+  x0=x(:,k)+mv_cutoff*(2*s-1)
+!==============================================================================!
+!                   Only consider point if V(trial)<Ecut
+!                 Compute Energy Change due to Trial Move
+!==============================================================================!
+  if(V(x0).lt.E_cut) then
+    counter=counter+1
+    U_move(k)=P(x0,E_cut)
+    Delta_E=0d0
+    do j=1,Npoints
+      if(j.ne.k) then
+        U_move(j)=Pair_LJ_NRG(x(:,j),x0,E_cut,c_LJ)
+        Delta_E=Delta_E+U(j,k)-U_move(j)
+      endif
+    enddo
+!==============================================================================!
+!               Accept any trial that decreases the energy
+!==============================================================================!
+    if(Delta_E.ge.0d0)then
+      U(:,k)=U_move(:)
+      U(k,:)=U_move(:)
+      accept=accept+1
+      x(:,k)=x0(:)
+      deltae1=deltae1+Delta_E
+    endif
+  endif
+!==============================================================================!
+! for MMC want acceptance ~50%, adjust trial movement displacement accordingly
+!==============================================================================!
+  if(mod(i,MMC_freq)==0)then
+    if(dble(accept)/counter<0.3)then
+      mv_cutoff=mv_cutoff*0.9
+    else
+      mv_cutoff=mv_cutoff*1.1
+    endif
+  accept=0
+  counter=0
+  deltae1=0
+  endif
+enddo
+call write_grid(x,18,'grid_fin.dat')
+!==============================================================================!
+end subroutine generate_grid
+!==============================================================================!
+subroutine write_out(E_cut,N_1D,c_LJ,N_MMC_grid,MMC_freq)
+!==============================================================================!
+!write output file
+!==============================================================================!
+implicit none
+integer::N_1D,N_MMC_grid, MMC_freq,i
+double precision::E_cut,c_LJ
+open(unit=99,file='out')
+write(99,*) 'd ==> ', d
+write(99,*) 'D_morse ==> ',D_morse
+do i=1,d
+  write(99,*) 'Box Dimensions==>', xmin(i),xmax(i)
+enddo
+write(99,*) 'omega ==> ',omega
+write(99,*) 'integral_P ==> ',integral_P
+write(99,*) 'E_cut ==> ',E_cut
+write(99,*) 'N_1D ==> ',N_1D
+write(99,*) 'Npoints ==> ',Npoints
+write(99,*) 'c_LJ ==> ',c_LJ
+write(99,*) 'N_MMC_grid ==> ',N_MMC_grid
+write(99,*) 'MMC_freq ==> ',MMC_freq
+close(99)
+end subroutine write_out
 !==============================================================================!
 end module morse_grid_mod
-!==============================================================================!
 !==============================================================================!
 program main
 use morse_grid_mod
 !==============================================================================!
-!==============================================================================!
 implicit none
-integer::N_MMC_box,N_1D
+integer::N_MMC_box,N_1D,N_MMC_grid,MMC_freq
 double precision::E_cut,c_LJ
 double precision,allocatable,dimension(:,:)::x,U
-!!!!!integer::MMC_freq,accept,counter,i,j,k,plt_count
-!!!!!double precision::Delta_E,deltae1,mv_cutoff,Moment(0:5)
-!!!!!double precision,allocatable,dimension(:)::x0,s,U_move,xmin(:),xmax(:)
-!!!!!double precision,allocatable,dimension(:,:)::x,U
-!==============================================================================!
-!                           Read Input Data File                               !
 !==============================================================================!
 read(*,*) N_MMC_box
 read(*,*) E_cut
 read(*,*) N_1D
 read(*,*) Npoints
 read(*,*) c_LJ
-write(*,*) 'Test 0; Successfully Read Input File'
+read(*,*) N_MMC_grid
+read(*,*) MMC_freq
 !==============================================================================!
 !                               Allocations
 !==============================================================================!
 allocate(xmin(d),xmax(d),x(d,Npoints),U(Npoints,Npoints))
-!1111allocate(U_move(Npoints))
-write(*,*) 'Test 1; Successfully Allocated arrays'
-!==============================================================================!
-!develop call statements for subroutines to write
 !==============================================================================!
 call box_size_P(N_MMC_box,E_cut)
 call compute_integral_P(N_1D,E_cut)
-call initial_distribution(x,Npoints,E_cut)
-call initial_pairwise_energy(U,x,Npoints,E_cut,c_LJ)
-!call optimize_grid()
+call initial_distribution(x,E_cut)
+call initial_pairwise_energy(x,U,E_cut,c_LJ)
+call generate_grid(x,U,E_cut,c_LJ,N_MMC_Grid,MMC_freq)
+call write_out(E_cut,N_1D,c_LJ,N_MMC_grid,MMC_freq)
 end program main

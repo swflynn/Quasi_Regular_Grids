@@ -1,0 +1,7 @@
+100000                                                               !N_MMC_box
+11.5                                                                 !Ecut
+30                                                                   !N_1D
+200                                                                  !Npoints
+1.2                                                                  !c_LJ
+1000000                                                               !N_MMC_grid
+10000                                                                 !MMC_freq
