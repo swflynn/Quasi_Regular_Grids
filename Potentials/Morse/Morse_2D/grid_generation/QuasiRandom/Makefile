@@ -1,22 +1,25 @@
 #==============================================================================#
-#			   Fortran Compiler/Flags
-#-O0=no optimization,-O3=full optimization
+#			   										Fortran Compiler/Flags
 #==============================================================================#
-OBJS = Sobol S_std rej main
-FC = gfortran -g -fcheck=all
+FC=gfortran
+FFLAGS=-O2
+#FFLAGS= -g -O0 -Wall -Wextra -pedantic -fcheck=all -fbacktrace
 #==============================================================================#
 #			   	Targets
 #==============================================================================#
-all: Sobol rej main
+all: sobol mods grid main
 #==============================================================================#
-Sobol:
-	$(FC) -c sobol.f90
+sobol:
+	$(FC) $(FFLAGS) -c sobol.f90
 #==============================================================================#
-rej:
-	$(FC) -c rejection.f90 
+mods:
+	$(FC) $(FFLAGS) -c sobol2D_mod.f90
+#==============================================================================#
+grid:
+	$(FC) $(FFLAGS) -c sobol2D.f90
 #==============================================================================#
 main:
-	$(FC) -O rejection.o sobol.o 
+	$(FC) $(FFLAGS) sobol.o sobol2D_mod.o sobol2D.o
 #==============================================================================#
 clean:
 	rm -rf *.o *.mod *.out $(OBJS)
