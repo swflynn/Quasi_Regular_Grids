@@ -1,0 +1,10 @@
+2                                                                !dimensionality
+100000                                                           !N_MMC_box
+11.5                                                             !Ecut
+30                                                               !N_1D
+200                                                              !Npoints
+1.2                                                              !c_LJ
+0.2041241 0.18371169                                             !omega
+12.                                                              !D_morse
+1000000                                                          !N_MMC_grid
+10000                                                            !MMC_freq
