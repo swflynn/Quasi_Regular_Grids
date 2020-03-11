@@ -1,25 +1,28 @@
 #==============================================================================#
-#			   Fortran Compiler/Flags
-#-O0=no optimization,-O3=full optimization
+#			   									Fortran Compiler/Flags
+#								-O0=no optimization,-O3=full optimization
 #==============================================================================#
-FC=gfortran 
+FC=gfortran
 FFLAGS=-O2
 #FFLAGS= -g -O0 -Wall -Wextra -pedantic -fcheck=all -fbacktrace 
 #==============================================================================#
-#			   	Targets 
+#			   													Targets
 #==============================================================================#
-all: dgb
+all: int mod grid main
 #==============================================================================#
-#			Compile all Fortran Files
+int:
+	$(FC) $(FFLAGS) -c gen_hermite_rule.f90
 #==============================================================================#
-%.o: %.f90
-	$(FC) $(FFLAGS) -o $@ -c $^
+mod:
+	$(FC) $(FFLAGS) -c spectra_module.f90 -llapack
+#==============================================================================#
+grid:
+	$(FC) $(FFLAGS) -c spectra.f90 -llapack
 #==============================================================================#
 #				DGB Cluster
 #==============================================================================#
-dgb: QRGB_nD.o gen_hermite_rule.o 
-#dgb: GHQ_3D.o gen_hermite_rule.o 
-	$(FC) -o $@ $^  -llapack
+main:
+	$(FC) $(FFLAGS) gen_hermite_rule.o spectra_module.o spectra.o -llapack
 #==============================================================================#
 clean:
-	rm -rf *.o *.mod eigenvalues.dat overlap_eigenvalues.dat simulation.dat dgb
+	rm -rf *.o *.mod main out a.out
