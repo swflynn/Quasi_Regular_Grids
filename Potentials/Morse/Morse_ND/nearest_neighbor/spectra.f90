@@ -7,7 +7,7 @@
 !This code uses LLAPACK to solve the generalized eigenvalue problem
 !==============================================================================!
 !       Modified:
-!   8 March 2020
+!   13 March 2020
 !       Author:
 !   Shane Flynn
 !==============================================================================!
@@ -22,8 +22,7 @@ double precision,allocatable,dimension(:,:)::x,Smat,Hmat
 !==============================================================================!
 !                            LLAPACK dsygv variables
 !==============================================================================!
-integer::itype,info,lwork
-double precision,allocatable,dimension(:)::work
+integer::itype,info,Lwork
 !==============================================================================!
 !                             Read Input Data File
 !==============================================================================!
@@ -35,15 +34,14 @@ read(*,*) alpha0
 !                                 Allocations
 !==============================================================================!
 allocate(x(d,NG),alpha(NG),eigenvalues(NG),Smat(NG,NG),Hmat(NG,NG))
-lwork=max(1,3*NG-1)
-allocate(work(max(1,lwork)))
+Lwork=max(1,3*NG-1)
 !==============================================================================!
 call read_grid(d,NG,x)
-call gaussian_widths(d,NG,alpha0,alpha,x)
-call overlap_matrix(d,NG,alpha,Smat,x)
-call diagonalize_overlap(NG,Smat,eigenvalues,lwork)
-call get_hamiltonian(d,NG,GH_order,x,alpha,Smat,Hmat)
-call hamiltonian_eigenvalues(NG,Hmat,Smat,eigenvalues,work,Lwork)
+call gaussian_widths(d,NG,x,alpha0,alpha)
+call overlap_matrix(d,NG,x,alpha,Smat)
+call overlap_eigenvalues(NG,Smat,eigenvalues,Lwork)
+call get_hamiltonian(d,NG,x,alpha,Smat,GH_order,Hmat)
+call hamiltonian_eigenvalues(NG,Smat,Hmat,eigenvalues,Lwork)
 call write_out(d,NG,alpha0,GH_order)
 !==============================================================================!
 end program main
