@@ -1,3 +1,4 @@
+200                                                              !Npoints
 2                                                                !dimensionality
 100000                                                           !N_MMC_box
 11.5                                                             !Ecut

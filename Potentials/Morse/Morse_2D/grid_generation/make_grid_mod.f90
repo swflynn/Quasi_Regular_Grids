@@ -18,15 +18,7 @@
 module make_grid_mod
 implicit none
 !==============================================================================!
-!                            Global Variables
-!==============================================================================!
-!d              ==> Particle Dimensionality
-!Npoints        ==> Number of grid points
-!integral_P     ==> Normalization for P_x
-!==============================================================================!
-integer::Npoints
 double precision,allocatable,dimension(:)::xmin,xmax
-double precision::integral_P
 !==============================================================================!
 contains
 !==============================================================================!
@@ -45,7 +37,7 @@ double precision::x(d),omega(d),D_morse,V
 V=D_morse*sum((exp(-omega(:)*x(:))-1.)**2)
 end function V
 !==============================================================================!
-function P(d,x,E_cut,omega,D_morse)
+function P(d,x,E_cut,omega,D_morse,integral_P)
 !==============================================================================!
 !Target Distribution Function
 !==============================================================================!
@@ -54,12 +46,12 @@ function P(d,x,E_cut,omega,D_morse)
 !==============================================================================!
 implicit none
 integer::d
-double precision::x(d),E_cut,P,omega(d),D_morse
+double precision::x(d),E_cut,P,omega(d),D_morse,integral_P
 if(V(d,x,omega,D_morse)<E_cut) P=(E_cut-V(d,x,omega,D_morse))**(d/2.)/integral_P
 if(V(d,x,omega,D_morse)>=E_cut) P=1d-20           !set equal to 0 if beyond Ecut
 end function P
 !==============================================================================!
-subroutine box_size_P(d,N_MMC_box,E_cut,omega,D_morse)
+subroutine box_size_P(d,N_MMC_box,E_cut,omega,D_morse,integral_P)
 !==============================================================================!
 !Determine the box size for normalizing P; (xmin,xmax) using MMC
 !==============================================================================!
@@ -72,10 +64,10 @@ subroutine box_size_P(d,N_MMC_box,E_cut,omega,D_morse)
 !xmax           ==>(d) maximum of normalization box
 !==============================================================================!
 integer::d,N_MMC_box,i,j
-double precision::E_Cut,dummy,r_trial(d),r(d),s(d),omega(d),D_morse
+double precision::E_Cut,dummy,r_trial(d),r(d),s(d),omega(d),D_morse,integral_P
 double precision,parameter::mv_cutoff=0.1
+integral_P=1d0                                     !initially set to 1 to call P
 r=0d0
-Integral_P=1d0                       !set equal to 1 so you can initially call P
 xmin=r
 xmax=r
 do i=1,N_MMC_box
@@ -89,7 +81,7 @@ do i=1,N_MMC_box
 !                             Test Acceptance
 !==============================================================================!
   call random_number(dummy)
-  if(P(d,r_trial,E_cut,omega,D_morse)/P(d,r,E_cut,omega,D_morse).ge.dummy) then
+  if(P(d,r_trial,E_cut,omega,D_morse,integral_P)/P(d,r,E_cut,omega,D_morse,integral_P).ge.dummy) then
     r=r_trial
     do j=1,d
       if(xmin(j)>r(j)) xmin(j)=r(j)
@@ -99,7 +91,7 @@ do i=1,N_MMC_box
 enddo
 end subroutine box_size_P
 !==============================================================================!
-subroutine compute_integral_P(d,N_1D,E_cut,omega,D_morse)
+subroutine compute_integral_P(d,N_1D,E_cut,omega,D_morse,integral_P)
 !==============================================================================!
 !Use a (uniform) square grid to integrate P(r)
 !Box size for the grid is determined in the box_size subroutine
@@ -113,7 +105,7 @@ subroutine compute_integral_P(d,N_1D,E_cut,omega,D_morse)
 !r(d)           ==>Coordinates
 !==============================================================================!
 integer::d,N_1D,i,j,index1(d),Ntotal
-double precision::r(d),Moment,dummy,delx(d),E_cut,omega(d),D_morse
+double precision::r(d),Moment,dummy,delx(d),E_cut,omega(d),D_morse,integral_P
 Moment=0.
 Ntotal=(N_1D+1)**d
 index1=0
@@ -128,7 +120,7 @@ do i=1,Ntotal
     endif
   enddo
   r(:)=xmin(:)+index1(:)*delx(:)
-  dummy=P(d,r,E_cut,omega,D_morse)
+  dummy=P(d,r,E_cut,omega,D_morse,integral_P)
   Moment=Moment+dummy
 enddo
 dummy=1./N_1D**d
@@ -138,12 +130,12 @@ enddo
 integral_P=dummy*Moment
 end subroutine compute_integral_P
 !==============================================================================!
-subroutine write_grid(d,x,id,grid_name)
+subroutine write_grid(Npoints,d,x,id,grid_name)
 !==============================================================================!
 !write grid to a file
 !==============================================================================!
 implicit none
-integer::d,id,j
+integer::Npoints,d,id,j
 double precision::x(d,Npoints)
 character(len=12)::grid_name
 open(unit=id,file=grid_name)
@@ -153,12 +145,12 @@ enddo
 close(id)
 end subroutine write_grid
 !==============================================================================!
-subroutine initial_distribution(d,x,E_cut,omega,D_morse)
+subroutine initial_distribution(Npoints,d,x,E_cut,omega,D_morse)
 !==============================================================================!
 !Generate initial distribution of points, accept anything within E_cut contour
 !==============================================================================!
 implicit none
-integer::d,i
+integer::Npoints,d,i
 double precision::E_Cut,x(d,Npoints),s(d),omega(d),D_morse
 i=1
 do while(i.le.Npoints)
@@ -169,10 +161,10 @@ do while(i.le.Npoints)
     i=i+1
   endif
 enddo
-call write_grid(d,x,17,'coor_ini.dat')
+call write_grid(Npoints,d,x,17,'coor_ini.dat')
 end subroutine initial_distribution
 !==============================================================================!
-function Pair_LJ_NRG(d,x1,x2,E_cut,c_LJ,omega,D_morse)
+function Pair_LJ_NRG(Npoints,d,x1,x2,E_cut,c_LJ,omega,D_morse,integral_P)
 !==============================================================================!
 !quasi-Lennard Jones pairwise energy between grid points
 !==============================================================================!
@@ -184,27 +176,28 @@ function Pair_LJ_NRG(d,x1,x2,E_cut,c_LJ,omega,D_morse)
 !c_LJ           ==>parameter for LJ
 !==============================================================================!
 implicit none
-integer::d
+integer::Npoints,d
 double precision::x1(d),x2(d),a,b,Pair_LJ_NRG,sigma1,sigma2,E_cut,c_LJ,omega(d)
-double precision::D_morse
+double precision::D_morse,integral_P
 a=sum((x1(:)-x2(:))**2)
-sigma1=c_LJ*(P(d,x1,E_cut,omega,D_morse)*Npoints)**(-1./d)
-sigma2=c_LJ*(P(d,x2,E_cut,omega,D_morse)*Npoints)**(-1./d)
+sigma1=c_LJ*(P(d,x1,E_cut,omega,D_morse,integral_P)*Npoints)**(-1./d)
+sigma2=c_LJ*(P(d,x2,E_cut,omega,D_morse,integral_P)*Npoints)**(-1./d)
 b=(sigma2**2/a)
 a=(sigma1**2/a)
 Pair_LJ_NRG=a**(d+9)-a**(d+3)+b**(d+9)-b**(d+3)
 end function Pair_LJ_NRG
 !==============================================================================!
-subroutine initial_pairwise_energy(d,x,U,E_cut,c_LJ,omega,D_morse)
+subroutine initial_pairwise_energy(Npoints,d,x,U,E_cut,c_LJ,omega,D_morse,integral_P)
 !==============================================================================!
 !Compute the pairwise energies for all the initial Grid Points U[x_ij]
 !==============================================================================!
 implicit none
-integer::d,i,j
+integer::Npoints,d,i,j
 double precision::E_cut,c_LJ,U(Npoints,Npoints),x(d,Npoints),omega(d),D_morse
+double precision::integral_P
 do i=2,Npoints
   do j=1,i-1
-    U(i,j)=Pair_LJ_NRG(d,x(:,i),x(:,j),E_cut,c_LJ,omega,D_morse)
+    U(i,j)=Pair_LJ_NRG(Npoints,d,x(:,i),x(:,j),E_cut,c_LJ,omega,D_morse,integral_P)
     U(j,i)=U(i,j)
   enddo
 enddo
@@ -226,14 +219,14 @@ call random_number(a)
 random_integer=floor(a*(Nmax-Nmin+1))+Nmin
 end function random_integer
 !==============================================================================!
-subroutine generate_grid(d,x,U,E_cut,c_LJ,omega,D_morse,N_MMC_grid,MMC_freq)
+subroutine generate_grid(Npoints,d,x,U,E_cut,c_LJ,omega,D_morse,N_MMC_grid,MMC_freq,integral_P)
 !==============================================================================!
 !                           Generate QRG using MMC
 !==============================================================================!
 implicit none
-integer::d,N_MMC_grid,MMC_freq,accept,counter,i,j,k
+integer::Npoints,d,N_MMC_grid,MMC_freq,accept,counter,i,j,k
 double precision::x(d,Npoints),U(Npoints,Npoints),E_cut,c_LJ,mv_cutoff,deltae1
-double precision::Delta_E,U_move(Npoints),s(d),x0(d),omega(d),D_morse
+double precision::Delta_E,U_move(Npoints),s(d),x0(d),omega(d),D_morse,integral_P
 !==============================================================================!
 accept=0
 counter=0
@@ -253,11 +246,11 @@ do i=1,N_MMC_grid
 !==============================================================================!
   if(V(d,x0,omega,D_morse).lt.E_cut) then
     counter=counter+1
-    U_move(k)=P(d,x0,E_cut,omega,D_morse)
+    U_move(k)=P(d,x0,E_cut,omega,D_morse,integral_P)
     Delta_E=0d0
     do j=1,Npoints
       if(j.ne.k) then
-        U_move(j)=Pair_LJ_NRG(d,x(:,j),x0,E_cut,c_LJ,omega,D_morse)
+        U_move(j)=Pair_LJ_NRG(Npoints,d,x(:,j),x0,E_cut,c_LJ,omega,D_morse,integral_P)
         Delta_E=Delta_E+U(j,k)-U_move(j)
       endif
     enddo
@@ -286,17 +279,17 @@ do i=1,N_MMC_grid
   deltae1=0
   endif
 enddo
-call write_grid(d,x,18,'grid_fin.dat')
+call write_grid(Npoints,d,x,18,'grid_fin.dat')
 !==============================================================================!
 end subroutine generate_grid
 !==============================================================================!
-subroutine write_out(d,E_cut,N_1D,c_LJ,omega,D_morse,N_MMC_grid,MMC_freq)
+subroutine write_out(Npoints,d,E_cut,N_1D,c_LJ,omega,D_morse,N_MMC_grid,MMC_freq,integral_P)
 !==============================================================================!
 !write output file
 !==============================================================================!
 implicit none
-integer::d,N_1D,N_MMC_grid, MMC_freq,i
-double precision::E_cut,c_LJ,D_morse,omega(d)
+integer::Npoints,d,N_1D,N_MMC_grid, MMC_freq,i
+double precision::E_cut,c_LJ,D_morse,omega(d),integral_P
 open(unit=99,file='out')
 write(99,*) 'd ==> ', d
 write(99,*) 'D_morse ==> ',D_morse
