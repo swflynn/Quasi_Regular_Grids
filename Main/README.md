@@ -1,14 +1,5 @@
-# Main
-Currently have nD spectra equations
-Tested using morse 3D and 4D potentials.
-
-
-
 ## To Do
-Alternate Grid generation methods for a general potential
+Fortran: Vibrational-EigenSpectra module 
 
-2D spectra equations (special case)
+Python: Grid Generation, Vibrational-EigenSpectra. Analysis scripts for Morse
 
-Test alternate potentials spectra and grid generation
-
-Analysis scripts for plotting and error

@@ -1,10 +1,10 @@
 # Quasi-Regular Grids; Applications to the Vibrational Spectra Calculations
 Fortran and Python implementations for generating a Quasi-Regular Grid (QRG)
 using model Potential Energy Functions.
-See our JCP Communication
-[manuscript](https://doi.org/10.1063/1.5134677) for details.
+See our [manuscript](https://doi.org/10.1063/1.5134677) (JCP Communication) 
+for details.
 
-Given a general distribution of interest the Quasi-Regular method generates a
+Given a general distribution of interest the Quasi-Regular algorithm generates a
 set of points (the grid) that optimally samples the distribution.
 We demonstrate the utility of these grids by constructing a Distributed Gaussian
 Basis (DGB) and computing the associated Vibrational Eigenspectra.
@@ -15,7 +15,7 @@ associated Vibrational Eigenspectra.
 All equations are d-dimensional, therefore any potential of interest can be
 defined by the user.
 
-###Grid_Generation
+### Grid_Generation
 Consistent with the manuscript the following grid generation methods are
 available:
 * Quasi-Regular
@@ -37,14 +37,14 @@ methods.
 Various scripts I have used for understanding the project.
 
 ## External Codes
-I have used various Fortran modules during this project, a detailed list is
-provided below along with links to the appropriate source code.
+External Fortran modules were used during this project. 
+A detailed list is provided below along with links to the appropriate source code.
 
-#### Quasirandom Sequences:
+#### Quasi-Random Sequences:
 The [Sobol Sequence Generator](https://people.sc.fsu.edu/~jburkardt/f_src/sobol/sobol.html)
 was used for the Quasi-Random Calculations (sobol.f90).
-This code is under a GNU LGPL license and has been included here for
-convenience.
+This code is under a [GNU LGPL License](https://www.gnu.org/licenses/lgpl-3.0.en.html)
+and has been included here for convenience.
 
 Special thanks to John Burkardt for taking the time to discuss various
 quasi-random number generators and their implementation.
@@ -54,8 +54,8 @@ We used Gauss-Hermite Quadrature to evaluate the Potential Energy Matrix
 Elements.
 Again we have used code made available by
 [John Burkardt](https://people.sc.fsu.edu/~jburkardt/f_src/gen_hermite_rule/gen_hermite_rule.html)
-(gen_hermite_rule.f90) which is also under a GNU LGPL license and has been
-included here for convenience.
+(gen_hermite_rule.f90) which is also under a [GNU LGPL License](https://www.gnu.org/licenses/lgpl-3.0.en.html)
+and has been included here for convenience.
 
 The Monte Carlo and Quasi-Monte Carlo Wiki page
 ([MCQMC](http://roth.cs.kuleuven.be/wiki/Main_Page)) has been a useful resource
@@ -64,7 +64,8 @@ for generating and applying various Monte Carlo schemes.
 ## Scientific Context
 Accurate RoVibrational Energy calculations have a long history in computational
 chemistry/physics.
-I found the following references quite helpful while working on this project.
+The following references could be helpful for understanding the context for 
+this project.
 
 #### Distributed Gaussian Basis Sets
 The project was motivated in part by the work of
