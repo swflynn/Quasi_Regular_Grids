@@ -1,7 +1,7 @@
 # Quasi-Regular Grids; Applications to the Vibrational Spectra Calculations
 Fortran and Python implementations for generating a Quasi-Regular Grid (QRG)
 using model Potential Energy Functions.
-See our [manuscript](https://doi.org/10.1063/1.5134677) (JCP Communication) 
+See our [manuscript](https://doi.org/10.1063/1.5134677) (JCP Communication)
 for details.
 
 Given a general distribution of interest the Quasi-Regular algorithm generates a
@@ -33,11 +33,21 @@ P(x):= c^{-1}(E_{cut}-V(x))^{d/2}
 Various scripts I have generated for studying/analyzing the accuracy of these
 methods.
 
+## Individual_Grid_Methods
+Fortran and Python implementations for each of the four grid generation methods
+used in this work.
+Each directory contains one grid method to make modifying or applying a
+particular implementation easier.
+All the methods use the potentials_mod.f90 module found in Main.
+All equations are d-dimensional, therefore any potential of interest can be
+defined by the user.
+
+
 ## miscellaneous
 Various scripts I have used for understanding the project.
 
-## External Codes
-External Fortran modules were used during this project. 
+# External Codes
+External Fortran modules were used during this project.
 A detailed list is provided below along with links to the appropriate source code.
 
 #### Quasi-Random Sequences:
@@ -61,10 +71,10 @@ The Monte Carlo and Quasi-Monte Carlo Wiki page
 ([MCQMC](http://roth.cs.kuleuven.be/wiki/Main_Page)) has been a useful resource
 for generating and applying various Monte Carlo schemes.
 
-## Scientific Context
+# Scientific Context
 Accurate RoVibrational Energy calculations have a long history in computational
 chemistry/physics.
-The following references could be helpful for understanding the context for 
+The following references could be helpful for understanding the context for
 this project.
 
 #### Distributed Gaussian Basis Sets
