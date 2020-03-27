@@ -1,0 +1,7 @@
+300                         !Npoints
+2                           !dimensionality
+F                           !rejection logical
+1000000                     !N_MMC_box
+11.5                         !Ecut
+50                          !N_1D
+morse_pot                   !potential
