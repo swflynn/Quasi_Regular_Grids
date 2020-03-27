@@ -1,33 +1,16 @@
 !=================20==================40==================60==================80
-!                          Grid Generation Module
+!                    Quasi-Regular Grid Generation Module                      !
 !==============================================================================!
-!Generate a d-dimensional grid
-!All methods use Metropolis Monte Carlo to determine the box size for evaluating
-!the distribution.
-!A (uniform) square grid is then used to normalize the distribution
-!The following methods are available:
-!==============================================================================!
-!Quasi-Regular:
+!Generate a d-dimensional Quasi-Regular Grid 
 !QRG is optimized using a quasi-Lennard Jones Potential
 !Forced minimization; accept any trial moves that reduces the system's energy
-!==============================================================================!
-!Direct Product:
-!A square grid is generated such that each point is within E_{cut}
-!==============================================================================!
-!Pseudo-Random:
-!A pseudo-random number is generated and then evaluated using either the cutoff
-!contour or the rejection method to determine if the point is kept.
-!==============================================================================!
-!Quasi-Random:
-!A Quasi-random number is generated and then evaluated using either the cutoff
-!contour or the rejection method to determine if the point is kept.
-!In this work the Quasi-Random Sobol Sequence is used.
-!==============================================================================!
-!If you added a new potential to the potentials_mod.f90 be sure to update  the
+!Metropolis Monte Carlo is used to determine the box size and a uniform (square)
+!grid is used to normalize the distribution.
+!If you added a new potential to the potentials_mod.f90 be sure to update the
 !potentials subroutine.
 !==============================================================================!
 !       Modified:
-!   24 March 2020
+!   26 March 2020
 !       Author:
 !   Shane Flynn
 !==============================================================================!

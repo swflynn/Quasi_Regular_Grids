@@ -1,11 +1,11 @@
 !=================20==================40==================60==================80
-!                     Quasi-Regular Grid Generation Main
+!                     Quasi-Regular Grid Generation Main                       !
 !==============================================================================!
-!Generate Quasi-Regular Grid for any d-dimensional system of interest.
-!Reguires the potentials_mod.f90 (copy from main)
+!Generate a Quasi-Regular Grid for any d-dimensional system of interest.
+!Requires the potentials_mod.f90 (see Main)
 !==============================================================================!
 !       Modified:
-!   25 March 2020
+!   26 March 2020
 !       Author:
 !   Shane Flynn
 !==============================================================================!
