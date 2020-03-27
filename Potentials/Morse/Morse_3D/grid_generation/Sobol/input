@@ -1,5 +1,0 @@
-3           !d:         dimensionality of your gridpoints
-939         !NG:        number of gridpoints
-7.5        !E_cut:     Energy Cutoff Contour (7.5 form Garaschuk paper 3D Morse)
-1000000        !NMC:       number of MMC steps for generating grid
-300		!N_reg

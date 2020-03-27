@@ -1,8 +1,0 @@
-3           !d:             dimensionality of your gridpoints
-700         !NG:            number of gridpoints
-1000000     !N_MC_moments:  number of MMC steps for computing moments
-300	    !N_reg          number of gridpoints for regular grid (1D)
-1000000     ! LJ            number of steps to optimize QR grid
-1000        ! LJ            frequency to evaluate mv_cutoff parameter
-7.5         !E_cut:         Energy Cutoff Contour (7.5 form Garaschuk paper 3D Morse)
-1.0         !c_LJ:          Scaling parameter for LJ sigma

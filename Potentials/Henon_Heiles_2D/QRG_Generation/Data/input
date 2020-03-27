@@ -1,7 +1,0 @@
-200         !Npoints:       number of gridpoints
-1000000     !N_MC_moments:  number of MC moves for computing moments
-300	    !N_reg          number of gridpoints (every d) to compute moments (regular grid)
-1000000    !N_MC           number of MMC steps to distribute points
-1000     !MMC_Freq       frequency for evaluating MMC
-13.3333        !E_cut:      Energy Cutoff Contour, 
-1           !c_LJ:          Scaling parameter for LJ sigma
