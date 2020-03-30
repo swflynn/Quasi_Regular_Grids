@@ -1,0 +1,10 @@
+2                       !d:             dimensionality of your gridpoints
+482                     !NG:            number of gridpoints
+100000                  !Nsobol:        # of Sobol Points for qMC Integration
+2.56                    !alpha0:        scaling gaussian widths. 2.56 from RCN
+2485.2238839034922      !Integral_P
+11.5                    !Ecut:          Energy cutoff (same as grid generation)
+1                       !c_LJ
+grid.dat                !coord_in:      input gridpoints
+all_theory.dat          !theory_in:      input theory morse eigenvalues
+10000                   !Data Frequency

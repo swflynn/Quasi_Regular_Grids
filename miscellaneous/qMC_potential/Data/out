@@ -1,0 +1,28 @@
+ data_freq=       10000   Nsobol=      100000
+ Test 0; Successfully Read Input File
+ Test 3; Successfully Generated Gaussian Widths
+ Info (Initial Overlap Matrix) ==>            0
+ RCN =    3.2824931946212954E-009
+ Test 4; Overlap Matrix is Positive Definite
+ Test 5; Successfully Generated Integration Sequence
+ Generalized Eigenvalue Iteration       10000
+ info ==>            0
+ Generalized Eigenvalue Iteration       20000
+ info ==>            0
+ Generalized Eigenvalue Iteration       30000
+ info ==>            0
+ Generalized Eigenvalue Iteration       40000
+ info ==>            0
+ Generalized Eigenvalue Iteration       50000
+ info ==>            0
+ Generalized Eigenvalue Iteration       60000
+ info ==>            0
+ Generalized Eigenvalue Iteration       70000
+ info ==>            0
+ Generalized Eigenvalue Iteration       80000
+ info ==>            0
+ Generalized Eigenvalue Iteration       90000
+ info ==>            0
+ Generalized Eigenvalue Iteration      100000
+ info ==>            0
+ Hello Universe!
