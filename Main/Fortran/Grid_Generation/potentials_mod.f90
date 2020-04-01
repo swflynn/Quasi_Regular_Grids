@@ -5,7 +5,7 @@
 !results in a single energy evaluation [V_i(x_i) = #]
 !After defining a potential add the appropriate call statement to the
 !"potentials" subroutine in grids_mod.f90
-!All equations in grid_generation and vibrational_spectra are derived 
+!All equations in grid_generation and vibrational_spectra are derived
 !and implemented as d-dimensional.
 !==============================================================================!
 !       Modified:
@@ -30,10 +30,17 @@ subroutine morse(d,x_i,V_i)
 !==============================================================================!
 implicit none
 integer::d
-double precision::x_i(d),V_i
-double precision,parameter::omega(2)=(/0.2041241,0.18371169/)
-!double precision,parameter::omega(3)=(/0.2041241,0.18371169,0.16329928/)
+double precision::x_i(d),V_i,omega(d)
+double precision,parameter::omega2(2)=(/0.2041241,0.18371169/)
+double precision,parameter::omega3(3)=(/0.2041241,0.18371169,0.16329928/)
 double precision,parameter::D_morse=12.
+if(d==2)then
+  omega=omega2
+elseif(d==3)then
+  omega=omega3
+else
+  stop 'Subroutine morse omega not defined, check potentials_mod.f90'
+endif
 V_i=D_morse*sum((exp(-omega(:)*x_i(:))-1.)**2 )
 end subroutine morse
 !==============================================================================!
