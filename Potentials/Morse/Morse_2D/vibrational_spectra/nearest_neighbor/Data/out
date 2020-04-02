@@ -1,7 +1,0 @@
- Test 0; Successfully Read Input File
- Test 1; Successfully Generated Alphas from nearest neighbor
- Info (Initial Overlap Matrix) ==>            0
- RCN =   3.1214722432369316E-013
- Test 2; Overlap Matrix is Positive Definite
- info ==>            0
- Hello Universe!

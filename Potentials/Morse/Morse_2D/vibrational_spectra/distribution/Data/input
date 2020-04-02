@@ -1,9 +1,0 @@
-2                       !d:                 dimensionality of your gridpoints
-300                     !NG:                number of gridpoints
-10                      !GH_order           order for the Gauss Hermite Quadriture
-grid.dat                !grid_in:           input gridpoints
-all_theory.dat          !theory_in:         ordered theory eigenvalues for 2D Morse
-849.96532804243986      !Integral_P         normalization from grid generation
-12                      !E_cut              contour cutoff
-1                       !c_LJ               QLJ parameter
-0.2                     !alpha0             alpha scaling parameter 

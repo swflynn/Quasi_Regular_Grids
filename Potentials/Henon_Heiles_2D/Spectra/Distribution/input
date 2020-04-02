@@ -1,7 +1,0 @@
-300                     !NG:                number of grid-points
-10                      !GH_order           order for the Gauss Hermite Quadrature
-grid.dat                !grid_in:           input grid-points
-623.02336998518547      !Integral_P         P(x) normalization
-13.333299999999999      !E_cut              Energy Cutoff Contour
-1.0000000000000000      !c_LJ               Lennard Jones Parameter
-1.5                     !alpha0             alpha scaling parameter
