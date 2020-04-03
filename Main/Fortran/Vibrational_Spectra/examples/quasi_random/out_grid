@@ -1,0 +1,14 @@
+ d ==>            2
+ grid type ==> quasi-random        
+ potential ==> morse_pot           
+ use rejection ? ==>  T
+ Box Dimensions==>  -3.2977130121886842        16.043993282758343     
+ Box Dimensions==>  -3.6749614045969534        14.208910032996888     
+ integral_P ==>    748.53950541208053     
+ E_cut ==>    11.500000000000000     
+ N_1D ==>           50
+ Npoints ==>          300
+ c_LJ ==>    1.2000000000000000     
+ N_MMC_box ==>      1000000
+ N_MMC_grid ==>      1000000
+ MMC_freq ==>        10000
