@@ -1,8 +1,8 @@
 !=================20==================40==================60==================80
 !                          Grid Generation Module
 !==============================================================================!
-!Generate a d-dimensional grid 
-!All methods use Metropolis Monte Carlo to determine the box size for evaluating 
+!Generate a d-dimensional grid
+!All methods use Metropolis Monte Carlo to determine the box size for evaluating
 !the distribution.
 !A (uniform) square grid is then used to normalize the distribution
 !The following methods are available:
@@ -11,16 +11,16 @@
 !QRG is optimized using a quasi-Lennard Jones Potential
 !Forced minimization; accept any trial moves that reduces the system's energy
 !==============================================================================!
-!Direct Product: 
+!Direct Product:
 !A square grid is generated such that each point is within E_{cut}
 !==============================================================================!
 !Pseudo-Random:
-!A pseudo-random number is generated and then evaluated using either the cutoff 
-!contour or the rejection method to determine if the point is kept. 
+!A pseudo-random number is generated and then evaluated using either the cutoff
+!contour or the rejection method to determine if the point is kept.
 !==============================================================================!
 !Quasi-Random:
-!A Quasi-random number is generated and then evaluated using either the cutoff 
-!contour or the rejection method to determine if the point is kept. 
+!A Quasi-random number is generated and then evaluated using either the cutoff
+!contour or the rejection method to determine if the point is kept.
 !In this work the Quasi-Random Sobol Sequence is used.
 !==============================================================================!
 !If you added a new potential to the potentials_mod.f90 be sure to update  the
@@ -56,7 +56,7 @@ end function random_integer
 subroutine potentials(potential,d,x_i,V_i)
 !==============================================================================!
 !Determines which Potential Energy Function to call
-!See the potentials_mod.f90 for available potentials, and update this 
+!See the potentials_mod.f90 for available potentials, and update this
 !subroutine accordingly.
 !All equations derived for a d-dimensional system, any potential is valid.
 !==============================================================================!
@@ -132,7 +132,7 @@ end subroutine grid_type
 function P_i(potential,d,x_i,V_i,E_cut,integral_P)
 !==============================================================================!
 !Target Distribution Function, !defined according to a semi-classical argument:
-!B. Poirier, “Algebraically self-consistent quasiclassical approximation on 
+!B. Poirier, “Algebraically self-consistent quasiclassical approximation on
 !phase space,” Found. Phys. 30, 1191–1226 (2000).
 !This subroutine computes P(x_i)
 !==============================================================================!
@@ -180,7 +180,7 @@ xmin=r
 xmax=r
 do i=1,N_MMC_box
   call random_number(s)
-  r_trial=r+mv_cutoff*(2*s-1) 
+  r_trial=r+mv_cutoff*(2*s-1)
 !trial move needs to be (-1,1), random numbers are (0,1) ===>s=2*s-1 Transform
   call random_number(dummy)                           !MMC acceptance criteria
   if(P_i(potential,d,r_trial,V_i,E_cut,integral_P)/&
@@ -210,7 +210,7 @@ subroutine compute_integral_P(potential,d,V_i,E_cut,xmin,xmax,N_1D,integral_P)
 !N_1D               ==>Number of points in 1 dimension for computing integral_P
 !integral_P         ==>Normalization constant for the distribtion P(x)
 !Ntotal             ==>Total number of evaluations for all dimensions
-!Moment             ==>First Moment for the distribution 
+!Moment             ==>First Moment for the distribution
 !==============================================================================!
 integer::d,N_1D,i,j,index1(d),Ntotal
 double precision::r(d),Moment,dummy,delx(d),E_cut,integral_P,xmin(d),xmax(d),V_i
@@ -325,7 +325,7 @@ subroutine pseudo_unif(d,x_unif,xmin,xmax)
 !Scale the points from [0,1] ==> [xmin,xmax]
 !==============================================================================!
 !d                  ==>Coordinate dimensionality (x^i=x_1,x_2,...x_d)
-!x_unif(d)          ==>Uniform Pseudo-Random point 
+!x_unif(d)          ==>Uniform Pseudo-Random point
 !xmin(d)            ==>Minimum of normalization box size
 !xmax(d)            ==>Maximum of normalization box size
 !==============================================================================!
@@ -371,7 +371,7 @@ call box_size_P(potential,d,V_i,E_cut,xmin,xmax,N_MMC_box,integral_P)
 call compute_integral_P(potential,d,V_i,E_cut,xmin,xmax,N_1D,integral_P)
 skip=Npoints                              !skip is for the sobol generator seed
 count_acc=0
-do while(count_acc.lt.Npoints)              
+do while(count_acc.lt.Npoints)
   z=0d0
   call sobol_unif(d,skip,z,xmin,xmax)
   call random_number(accept)
@@ -402,7 +402,7 @@ subroutine sobol_unif(d,skip,x_unif,xmin,xmax)
 !==============================================================================!
 !d                  ==>Coordinate dimensionality (x^i=x_1,x_2,...x_d)
 !skip               ==>Seed for the random number generator
-!x_unif(d)          ==>Uniform Quasi-Random point 
+!x_unif(d)          ==>Uniform Quasi-Random point
 !xmin(d)            ==>Minimum of normalization box size
 !xmax(d)            ==>Maximum of normalization box size
 !==============================================================================!
@@ -461,7 +461,7 @@ do i=1,N_MMC_grid
   call potentials(potential,d,x0,V_i)
   if(V_i.lt.E_cut) then                          !Only consider if V(trial)<Ecut
     counter=counter+1
-    U_move(k)=P_i(potential,d,x0,V_i,E_cut,integral_P) 
+    U_move(k)=P_i(potential,d,x0,V_i,E_cut,integral_P)
     Delta_E=0d0
     do j=1,Npoints
       if(j.ne.k) then
@@ -591,6 +591,36 @@ do i=2,Npoints
   enddo
 enddo
 end subroutine initial_pair_energy
+!==============================================================================!
+subroutine write_input(d,Npoints,grid,potential,E_cut,c_LJ,integral_P)
+!==============================================================================!
+!Write a skeleton input file for specra calculations
+!==============================================================================!
+!d                  ==>Coordinate dimensionality (x^i=x_1,x_2,...x_d)
+!Npoints            ==>Number of points
+!grid               ==>Grid type
+!potential          ==>potential name
+!E_cut              ==>Distribution cutoff contour
+!c_LJ               ==>Parameter for q-LJ pseudo-potential
+!integral_P         ==>Normalization constant for the distribtion P(x)
+!==============================================================================!
+implicit none
+integer::Npoints,d
+double precision::E_cut,c_LJ,integral_P
+character(len=20)::grid,potential
+!==============================================================================!
+open(unit=98,file='input_spectra')
+write(98,*) d
+write(98,*) Npoints
+write(98,*) 'GH_order'
+write(98,*) 'alpha0'
+write(98,*) grid
+write(98,*) potential
+write(98,*) E_cut
+write(98,*) c_LJ
+write(98,*) integral_P
+close(98)
+end subroutine write_input
 !==============================================================================!
 subroutine write_out(grid,potential,reject,Npoints,d,E_cut,xmin,xmax,N_1D,&
         N_MMC_box,c_LJ,N_MMC_grid,MMC_freq,integral_P)

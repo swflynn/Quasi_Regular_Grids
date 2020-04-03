@@ -1,7 +1,7 @@
 !=================20==================40==================60==================80
 !                            Grid Generation Main
 !==============================================================================!
-!Generate numerical for any d-dimensional system of interest.
+!Generate numerical grid for any d-dimensional system of interest.
 !Grid generation methods included are:
 !Quasi-Regular, Quasi-Random, Pseudo-Random, Direct Product
 !==============================================================================!
@@ -57,4 +57,5 @@ call grid_type(grid,potential,reject,Npoints,d,x,U,V_i,E_cut,xmin,xmax,N_1D,&
 N_MMC_box,c_LJ,N_MMC_grid,MMC_freq,integral_P)
 call write_out(grid,potential,reject,Npoints,d,E_cut,xmin,xmax,N_1D,&
         N_MMC_box,c_LJ,N_MMC_grid,MMC_freq,integral_P)
+call write_input(d,Npoints,grid,potential,E_cut,c_LJ,integral_P)
 end program main
