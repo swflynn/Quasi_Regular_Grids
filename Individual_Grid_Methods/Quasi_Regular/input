@@ -1,9 +1,0 @@
-600                         !Npoints
-3                           !dimensionality
-1000000                     !N_MMC_box
-10.                         !Ecut
-50                          !N_1D
-1.2                         !c_LJ
-1000000                     !N_MMC_grid
-10000                       !MMC_freq
-morse_pot                   !potential
