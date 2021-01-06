@@ -1,5 +1,3 @@
-! taken from nd_PE_matrix
-! Ned to remove this from github
 module sobol
 contains
 FUNCTION i8_bit_hi1 ( n )
