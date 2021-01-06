@@ -1,5 +1,5 @@
 # Quasi-Regular Grids; Applications to the Vibrational Spectra Calculations
-Fortran and Python implementations for generating a Quasi-Regular Grid (QRG)
+Fortran and Python (under development) implementations for generating a Quasi-Regular Grid (QRG)
 using model Potential Energy Functions.
 See our [manuscript](https://doi.org/10.1063/1.5134677) (JCP Communication)
 for details.
