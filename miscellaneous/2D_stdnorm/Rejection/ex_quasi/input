@@ -1,0 +1,5 @@
+2           !dimensionality
+256         !Npoints
+-4          !domain minimum
+4           !domain maximum
+false       !flag (True for Pseudo-Random; Talse for Quasi-Random)
